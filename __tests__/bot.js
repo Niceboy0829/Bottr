@@ -5,47 +5,43 @@ jest.unmock('nock')
 jest.unmock('../lib/bot')
 jest.unmock('../lib/event-emitter')
 jest.unmock('../lib/event')
-jest.unmock('../lib/topic')
 
-var mock = require('mock-fs')
-var nock = require('nock')
+var mock = require('mock-fs');
+var nock = require('nock');
 var Bot = require('../lib/bot')
 
 var session = {
-  getUserContext: jest.fn(() => new Object({})),
   startTyping: jest.fn(),
   send: jest.fn()
 }
 
 test('should default to name "bot"', () => {
   var bot = new Bot()
-
   expect(bot.name).toEqual('bot')
-})
+});
 
 test('should use passed in name', () => {
   var bot = new Bot('bender')
-
   expect(bot.name).toEqual('bender')
-})
+});
 
-test('should start typing on message_received', () => {
+test('on message recieved bot should start typing', () => {
   var bot = new Bot()
 
   bot.trigger('message_received', {}, session)
 
   expect(session.startTyping).toBeCalled()
-})
+});
 
-test('should respond with default response when message not handled', () => {
+test('respond with default response when message not handled', () => {
   var bot = new Bot()
 
   bot.trigger('message_received', {}, session)
 
   expect(session.send).toBeCalled()
-})
+});
 
-test('should respond with error when no webhook listeners configured', () => {
+test('respond with error when no webhook listeners configured', () => {
   var error = jest.fn()
   var bot = new Bot()
 
@@ -54,7 +50,7 @@ test('should respond with error when no webhook listeners configured', () => {
   })
 
   expect(error).toBeCalled()
-})
+});
 
 test('should trigger hears function if it matches', () => {
   var handler = jest.fn()
@@ -64,7 +60,7 @@ test('should trigger hears function if it matches', () => {
   bot.trigger('message_received', {}, session)
 
   expect(handler).toBeCalled()
-})
+});
 
 test('should trigger move to next hears function if it does not match', () => {
   var handler = jest.fn()
@@ -75,9 +71,9 @@ test('should trigger move to next hears function if it does not match', () => {
   bot.trigger('message_received', {}, session)
 
   expect(handler).toBeCalled()
-})
+});
 
-test('should trigger hears functions in order of declaration', () => {
+test('should trigger hears functions in order of declartion', () => {
   var handler = jest.fn()
   var handler2 = jest.fn()
   var bot = new Bot()
@@ -89,14 +85,14 @@ test('should trigger hears functions in order of declaration', () => {
 
   expect(handler).toBeCalled()
   expect(handler2).not.toBeCalled()
-})
+});
 
-test('should consume a component', () => {
+test('should consume component', () => {
   var component = jest.fn()
   var bot = new Bot()
   bot.use(component)
   expect(component).toBeCalledWith(bot)
-})
+});
 
 test('should download attachment from URI', (done) => {
   var bot = new Bot()
@@ -105,7 +101,7 @@ test('should download attachment from URI', (done) => {
 
   nock('http://www.google.co.uk')
   .get('/')
-  .reply(200, 'Hello World')
+  .reply(200, 'Hello World');
 
   bot.download({
     url: 'http://www.google.co.uk'
@@ -117,11 +113,11 @@ test('should download attachment from URI', (done) => {
 
       expect(data).toEqual('Hello World')
 
-      mock.restore()
-      done()
-    })
+      mock.restore();
+      done();
+    });
   })
-})
+});
 
 test('should download base64 encoded attachment', (done) => {
   var bot = new Bot()
@@ -138,8 +134,8 @@ test('should download base64 encoded attachment', (done) => {
 
       expect(data).toEqual('Hello World')
 
-      mock.restore()
-      done()
-    })
+      mock.restore();
+      done();
+    });
   })
-})
+});
